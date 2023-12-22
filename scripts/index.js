@@ -14,51 +14,58 @@ function getCPUChoice() {
   }
 }
 
-function getPlayerChoice() {
-  let choice;
-  while(!choice || choice != 'rock' && choice != 'paper' && choice != 'scissors') {
-    choice = prompt('What\'s your choice?').toLowerCase();
-  }
-  return choice;
+const score = document.querySelector('.score');
+const message = document.querySelector('.message');
+
+let PlayerScore = 0;
+let CPUScore = 0;
+
+function resetScores() {
+  PlayerScore = 0;
+  CPUScore = 0;
 }
 
-function game() { 
-  const PlayerChoice = getPlayerChoice();
+function setScoreString() {
+  score.textContent = `Player: ${PlayerScore} - ${CPUScore} :CPU`;
+}
+
+function playRound(PlayerChoice) { 
   const CPUChoice = getCPUChoice();
-  
-  console.group('Choices')
-  console.log(`Player: ${PlayerChoice}`);
-  console.log(`CPU: ${CPUChoice}`);
-  console.groupEnd('Choices');
-  
   if (
     (PlayerChoice === 'rock' && CPUChoice === 'scissors') ||
     (PlayerChoice === 'paper' && CPUChoice === 'rock') ||
     (PlayerChoice === 'scissors' && CPUChoice === 'paper')
   ) {
-    console.log(`Player beat CPU ~ ${PlayerChoice} beats ${CPUChoice}`);
-    return 'player';
-  } else if (PlayerChoice === CPUChoice) {
-    console.log(`Tie ~ ${PlayerChoice} ties with ${CPUChoice}`);
-    return 'tie';
-  } else {
-    console.log(`CPU beat Player ~ ${CPUChoice} beats ${PlayerChoice}`);
-    return 'cpu';
-  }
-}
-
-let PlayerScore = 0;
-let CPUScore = 0;
-let roundNo = 1;
-
-while (PlayerScore < 3 && CPUScore < 3 && roundNo <= 5) {
-  const winner = game();
-  if (winner === 'player') {
+    message.textContent = `Player beat CPU ~ ${PlayerChoice} beats ${CPUChoice}`;
     PlayerScore++;
-  } else if (winner === 'cpu') {
+    setScoreString();
+  } else if (PlayerChoice === CPUChoice) {
+    message.textContent = `Tie ~ ${PlayerChoice} ties with ${CPUChoice}`;
+  } else {
+    message.textContent = `CPU beat Player ~ ${CPUChoice} beats ${PlayerChoice}`;
     CPUScore++;
+    setScoreString();
   }
-  roundNo++;
+  if (PlayerScore >= 5 || CPUScore >= 5) {
+    const winner = PlayerScore > CPUScore ? 'Player' : 'CPU';
+    const loser = winner == 'Player' ? 'CPU' : 'Player';
+    message.textContent = `${winner} beat ${loser} - Winner is ${winner}`;
+    resetScores();
+    setScoreString();
+  }
 }
 
-console.log(`Winner is: ${PlayerScore > CPUScore ? 'Player' : 'CPU'}`);
+const buttons = document.querySelector('.buttons');
+const rock = document.querySelector('.rock');
+const paper = document.querySelector('.paper');
+const scissors = document.querySelector('.scissors');
+
+buttons.addEventListener('click', element => {
+  if (element.target == rock) {
+    playRound('rock');
+  } else if (element.target == paper) {
+    playRound('paper');
+  } else if (element.target == scissors) {
+    playRound('scissors');
+  }
+});
